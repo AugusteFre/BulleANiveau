@@ -66,8 +66,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             float y = event.values[1];
             float z = event.values[2];
 
-            // Met à jour la TextView avec les valeurs du capteur de gravité
-            gravityValues.setText("X: " + x + "\nY: " + y + "\nZ: " + z);
+            // Met à jour la TextView avec les valeurs du capteur de gravité, raccourci à un chiffre après la virgule
+            gravityValues.setText("X: " + ((int)(x*10))/10f + "\nY: " + ((int)(y*10))/10f + "\nZ: " + ((int)(z*10))/10f);
+
+            // Met à jour la TextView avec les valeurs du capteur de gravité, affichés en % (il y a des pourcents négatifs, donc jsp)
+            // gravityValues.setText("X: " + ((int)(x*10)) + "%\nY: " + ((int)(y*10)) + "%\nZ: " + ((int)(z*10)) + "%");
 
             // Méthode qui met à jour la position de la bulle
             updateBubbleosition(z, y);
