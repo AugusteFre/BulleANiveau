@@ -8,6 +8,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -17,6 +18,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager sensorManager;
     private Sensor gyroscope;
     private TextView gyroscopeValues;
+    private ImageView imageBubble;
 
     private int screenHeight;
     private int screenWidth;
@@ -31,11 +33,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         screenHeight = displayMetrics.heightPixels;
         screenWidth = displayMetrics.widthPixels;
-
         gyroscopeValues = findViewById(R.id.gyroscopeValues);
+        imageBubble = findViewById(R.id.imageBubble);
+
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
     }
 
 
@@ -53,15 +56,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+        if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
             float x = event.values[0];
             float y = event.values[1];
-            float z = event.values[2];
 
             // Mettez à jour votre TextView avec les valeurs du gyroscope
-            gyroscopeValues.setText("X: " + x + "\nY: " + y + "\nZ: " + z);
+            gyroscopeValues.setText("X: " + x + "\nY: " + y);
             // Appelez une méthode pour mettre à jour la position du TextView
-            updateTextViewPosition(x, y);
+            updateBubbleosition(x, y);
         }
     }
 
@@ -70,14 +72,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Ne faites rien pour l'instant
     }
 
-    private void updateTextViewPosition(float x, float y) {
+    private void updateBubbleosition(float x, float y) {
 
         // Calculez les nouvelles coordonnées en ajoutant les valeurs du gyroscope
-        float newX = (x * (screenWidth/2f/10f) + screenWidth/2f);
-        float newY = (y * (screenHeight/2f/10f) + screenHeight/2f);
+        float newX = (x * (screenWidth/2f/10f) + screenWidth/2f - imageBubble.getWidth()/2f);
+        float newY = (-y * (screenHeight/2f/10f) + screenHeight/2f - imageBubble.getHeight()/2f);
+
+        // Limitez les coordonnées à l'intérieur de l'écran
+        newX = Math.max(0, Math.min(newX, screenWidth - imageBubble.getWidth()));
+        newY = Math.max(0, Math.min(newY, screenHeight - imageBubble.getHeight()));
 
         // Définissez les nouvelles coordonnées pour le TextView
-        gyroscopeValues.setX(newX);
-        gyroscopeValues.setY(newY);
+        imageBubble.setX(newX);
+        imageBubble.setY(newY);
     }
 }
