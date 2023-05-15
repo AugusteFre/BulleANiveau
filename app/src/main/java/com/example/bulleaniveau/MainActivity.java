@@ -81,13 +81,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     /**
      * Met à jour la position de la bulle en fonction de la rotation du téléphone
-     * @param x la position x retournée par le "capteur de gravité"
+     * @param z la position z retournée par le "capteur de gravité"
      * @param y la position y retournée par le "capteur de gravité"
      */
     private void updateBubbleosition(float z, float y) {
 
         // Calculez les nouvelles coordonnées en ajoutant les valeurs du gravity
-        float newZ = (z * (screenWidth/2f/10f) + screenWidth/2f - imageBubble.getWidth()/2f);
+        float newZ = (-z * (screenWidth/2f/10f) + screenWidth/2f - imageBubble.getWidth()/2f);
         float newY = (-y * (screenHeight/2f/10f) + screenHeight/2f - imageBubble.getHeight()/2f);
 
         // Limitez les coordonnées à l'intérieur de l'écran
