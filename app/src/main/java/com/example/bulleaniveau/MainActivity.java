@@ -15,11 +15,13 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
+    // déclaration des modules
     private SensorManager sensorManager;
-    private Sensor gyroscope;
-    private TextView gyroscopeValues;
+    private Sensor gravity;
+    private TextView gravityValues;
     private ImageView imageBubble;
 
+    // déclaration des variables
     private int screenHeight;
     private int screenWidth;
 
@@ -29,23 +31,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // mesure la largeur et hauteur de l'écran
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         screenHeight = displayMetrics.heightPixels;
         screenWidth = displayMetrics.widthPixels;
-        gyroscopeValues = findViewById(R.id.gyroscopeValues);
+
+        // déclare les vues
+        gravityValues = findViewById(R.id.gravityValues);
         imageBubble = findViewById(R.id.imageBubble);
-
-
+        
+        // définit le type de capteur
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+        gravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, gravity, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -59,31 +64,38 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
             float x = event.values[0];
             float y = event.values[1];
+            float z = event.values[2];
 
-            // Mettez à jour votre TextView avec les valeurs du gyroscope
-            gyroscopeValues.setText("X: " + x + "\nY: " + y);
-            // Appelez une méthode pour mettre à jour la position du TextView
-            updateBubbleosition(x, y);
+            // Met à jour la TextView avec les valeurs du capteur de gravité
+            gravityValues.setText("X: " + x + "\nY: " + y + "\nZ: " + z);
+
+            // Méthode qui met à jour la position de la bulle
+            updateBubbleosition(z, y);
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Ne faites rien pour l'instant
+        // Ne fais rien pour l'instant
     }
 
-    private void updateBubbleosition(float x, float y) {
+    /**
+     * Met à jour la position de la bulle en fonction de la rotation du téléphone
+     * @param x la position x retournée par le "capteur de gravité"
+     * @param y la position y retournée par le "capteur de gravité"
+     */
+    private void updateBubbleosition(float z, float y) {
 
-        // Calculez les nouvelles coordonnées en ajoutant les valeurs du gyroscope
-        float newX = (x * (screenWidth/2f/10f) + screenWidth/2f - imageBubble.getWidth()/2f);
+        // Calculez les nouvelles coordonnées en ajoutant les valeurs du gravity
+        float newZ = (z * (screenWidth/2f/10f) + screenWidth/2f - imageBubble.getWidth()/2f);
         float newY = (-y * (screenHeight/2f/10f) + screenHeight/2f - imageBubble.getHeight()/2f);
 
         // Limitez les coordonnées à l'intérieur de l'écran
-        newX = Math.max(0, Math.min(newX, screenWidth - imageBubble.getWidth()));
+        newZ = Math.max(0, Math.min(newZ, screenWidth - imageBubble.getWidth()));
         newY = Math.max(0, Math.min(newY, screenHeight - imageBubble.getHeight()));
 
         // Définissez les nouvelles coordonnées pour le TextView
-        imageBubble.setX(newX);
+        imageBubble.setX(newZ);
         imageBubble.setY(newY);
     }
 }
